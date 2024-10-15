@@ -3,103 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video to Audio Converter</title>
+    <title>Sketchify</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="logo">
-            <img src="/static/ct_logo.ico" alt="Logo">
+            <img src="{{ url_for('static', filename='ct_logo.ico') }}" alt="Logo" aria-label="Clover Technologies Logo">
         </div>
         <div class="nav-title">ARTIFICIAL INTELLIGENCE & MACHINE LEARNING</div>
         <div class="nav-links">
-            <a id="about-link">About</a>
+            <a id="about-link" href="#" onclick="toggleAboutSection()">About</a>
         </div>
     </nav>
 
     <div class="container">
-        <h1>Video to Audio Converter</h1>
+        <h1>Sketchify App</h1>
 
-        <!-- Form for converting video to audio -->
-        <form id="conversion-form" action="/convert_video" method="POST" enctype="multipart/form-data">
-            <input type="file" name="video" accept="video/*" required id="video-input">
-            
-            <!-- Dropdown for selecting audio format -->
-            <label for="audio-format">Select Audio Format:</label>
-            <select name="audio_format" id="audio-format" required>
-                <option value="mp3">MP3</option>
-                <option value="m4a">M4A</option>
-                <option value="aac">AAC</option>
-                <option value="wav">WAV</option>
-                <option value="ogg">OGG</option>
-                <option value="flac">FLAC</option>
-                <option value="opus">Opus</option>
-                <option value="wma">WMA</option>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required id="image-input">
+            <label for="conversion" class="conversion-label">Choose Conversion Type:</label>
+            <select id="conversion" name="conversion" required>
+                <option value="fine_sketch">Fine Sketch</option>
+                <option value="soft_sketch">Soft Sketch</option>
+                <option value="shaded_pencil_art">Shaded Pencil Art</option>
+                <option value="anime_art">Anime Art</option>
+                <option value="color_pencil_sketch">Color Pencil Sketch</option>
             </select>
 
-            <video id="video-preview" controls style="display:none; width: 100%; margin-top: 20px;"></video>
-            <button type="submit" id="convert-button">Convert to Audio</button>
-            <div id="loading-animation" style="display: none;">
-                <div class="loader"></div>
-                <p>Converting your video to audio...</p>
+            <button type="button" id="convert-button">Convert</button>
+
+            <!-- Spinner -->
+            <div id="loading-spinner" style="display:none;">
+                <p>Processing... Please wait.</p>
             </div>
+
+            <div id="sketch-output" style="display: none;">
+                <h4>Output:</h4>
+                <div style="max-width: 500px; margin: auto;">
+                    <img id="sketchImage" src="" alt="Sketch Output" style="width: 100%; margin-top: 20px; border: 1px solid #ccc;">
+                </div>
+
+                <div>
+                    <h4>Download Your Image:</h4>
+                    <button type="button" onclick="downloadSketch()">Download</button>
+                </div>
+            </div>
+
+            <div id="error-message" style="display: none; color: red; text-align: center; margin-top: 10px;"></div>
         </form>
 
-        <div id="audio-output" style="display: none;">
-            <h4>Output Audio:</h4>
-            <audio controls id="output-audio">
-                <source id="audio-source" src="" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
+        <div class="customize-sketch">
+            <h3>Customize Your Sketch</h3>
+            <label for="pencil-thickness">Pencil Thickness:</label>
+            <input type="range" id="pencil-thickness" name="pencil_thickness" min="1" max="10" value="5">
+            <div id="pencil-thickness-value">Pencil Thickness: 5</div>
+
+            <label for="edge-sensitivity">Edge Sensitivity:</label>
+            <input type="range" id="edge-sensitivity" name="edge_sensitivity" min="0" max="10" value="5">
+            <div id="edge-sensitivity-value">Edge Sensitivity: 5</div>
+
+            <label for="brightness">Brightness:</label>
+            <input type="range" id="brightness" name="brightness" min="0" max="2" step="0.1" value="1">
+            <div id="brightness-value">Brightness: 1.0</div>
+
+            <label for="contrast">Contrast:</label>
+            <input type="range" id="contrast" name="contrast" min="0" max="2" step="0.1" value="1">
+            <div id="contrast-value">Contrast: 1.0</div>
+
+            <button type="button" id="reset-button">Reset</button>
         </div>
     </div>
 
-    <!-- About section -->
-    <div id="about-section" class="about-section">
-        <span class="close-button">&times;</span>
-        <h2>About the Project</h2>
-        
-        <!-- Project Description -->
-        <h3>Project Title: Video-to-Audio Converter</h3>
+    <!-- About Section -->
+    <div id="about-section" class="about-section" style="display: none;">
+        <span class="close-button" onclick="toggleAboutSection()">&times;</span>
+        <h2>About the Sketchify App</h2>
+        <h3>Project Title: Sketchify App</h3>
         <p>
-            The Video-to-Audio Converter is a Flask-based web application that allows users to upload video files and convert them into multiple audio formats. 
-            It leverages FFmpeg, a powerful multimedia processing tool, to extract audio from video files. This project is built using Python, HTML, CSS, and JavaScript, 
-            and it supports a wide variety of video input formats and audio output formats.
+            The Sketchify App is a web-based tool that allows users to convert their images into stunning pencil sketches or pencil art.
+            Built using Flask, HTML, CSS, and JavaScript, the app leverages OpenCV to apply sophisticated image processing techniques,
+            transforming everyday photos into artistic renditions with a single click.
         </p>
-    
-        <h3>Key Features:</h3>
-        <ul>
-            <li><strong>Multiple Audio Formats:</strong> Convert videos to MP3, AAC, WAV, OGG, M4A, FLAC, Opus, and WMA formats.</li>
-            <li><strong>Responsive UI:</strong> The interface is user-friendly and responsive, allowing seamless interaction on desktops and mobile devices.</li>
-            <li><strong>FFmpeg-Based Conversion:</strong> High-quality audio extraction powered by FFmpeg ensures optimal performance and output.</li>
-            <li><strong>Cross-Platform:</strong> The project can be run locally or deployed to web servers, making it suitable for various use cases.</li>
-            <li><strong>Fast Conversion:</strong> Efficient video-to-audio conversion, thanks to Flask’s asynchronous features and FFmpeg's performance.</li>
-        </ul>
-    
-        <!-- Use Case -->
-        <h3>Use Case: Video-to-Audio Converter</h3>
-        <p><strong>Description:</strong> 
-            The user wants to convert videos (such as music videos, lectures, podcasts, etc.) into various audio formats for easy playback, archiving, or offline listening. 
-            The converter allows users to extract high-quality audio from their video files and supports multiple audio formats like MP3, M4A, AAC, WAV, OGG, and more.  
-            The project provides an easy-to-use interface for uploading videos, selecting the desired audio format, and downloading the converted audio files.
-        </p>
-        <p>Here is the list of packages used in this project:</p>
-        <ul> 
-            <li>Flask==2.1.1</li>
-            <li>Werkzeug==2.1.1</li>
-            <li> FFmpeg-python==0.2.0</li>
-        </ul>
-       
-        </code></pre>
-    
     </div>
 
-    <!-- Footer section -->
     <footer>
         <nav class="footer-nav">
-            <p>&copy; 2024 CloverTechnologies. All rights reserved.</p>
+            <p>&copy; 2024 Clover Technologies. All rights reserved.</p>
         </nav>
     </footer>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+
 </body>
 </html>

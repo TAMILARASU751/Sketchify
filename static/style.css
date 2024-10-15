@@ -61,11 +61,6 @@ body {
     border-radius: 15px; /* Increased border-radius for softer corners */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow for more depth */
     flex-grow: 1; /* Allow the container to grow and take up space */
-    transition: transform 0.3s; /* Smooth scaling effect on hover */
-}
-
-.container:hover {
-    transform: scale(1.02); /* Slightly scale up on hover */
 }
 
 /* Headings Styles */
@@ -88,11 +83,34 @@ input[type="file"] {
     border-radius: 5px;         /* Rounded corners */
     background-color: #f9f9f9;  /* Light background for the input */
     color: #333;                 /* Dark text color */
-    transition: border 0.3s;    /* Smooth border color transition */
 }
 
-input[type="file"]:hover {
-    border-color: #a94444;       /* Change border color on hover */
+/* Dropdown Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: #8e051f;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block; /* Show dropdown on hover */
 }
 
 button {
@@ -103,17 +121,10 @@ button {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px; /* Add space above the button */
-    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for background and scaling */
 }
 
 button:hover {
     background-color: #a94444;
-    transform: translateY(-2px); /* Slight lift effect on hover */
-}
-
-hr {
-    border: 1px solid #ddd;
-    margin: 30px 0;
 }
 
 /* About Section Styles */
@@ -133,10 +144,10 @@ hr {
     border-radius: 8px;
     display: none;
     z-index: 1000;
-    color:#8e051f;
+    color: #8e051f;
 }
 
-.about-section h2, 
+.about-section h2,
 .about-section h3 {
     text-align: center;
     font-weight: bold;
@@ -144,7 +155,7 @@ hr {
 
 .about-section p,
 .about-section ul {
-    text-align:justify;
+    text-align: justify;
     text-align-last: left;
 }
 
@@ -166,7 +177,7 @@ hr {
 footer {
     text-align: center;
     padding: 10px;
-    background-color:white;
+    background-color: white;
     color: #8e051f;
     width: 100%; /* Ensure full-width footer */
     margin-top: auto; /* Push the footer to the bottom */

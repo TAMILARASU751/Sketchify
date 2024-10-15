@@ -1,61 +1,119 @@
-// Preview the selected video file
-document.getElementById('video-input').addEventListener('change', function() {
-    const videoFile = this.files[0];
-    const videoPreview = document.getElementById('video-preview');
-    const convertButton = document.getElementById('convert-button');
-
-    if (videoFile) {
-        const videoURL = URL.createObjectURL(videoFile);
-        videoPreview.src = videoURL;
-        videoPreview.style.display = 'block'; // Show the video
-        convertButton.style.display = 'block'; // Ensure the convert button is visible
-    } else {
-        videoPreview.style.display = 'none'; // Hide the video if no file is selected
-    }
-});
-
-// Handle form submission and audio output
-document.getElementById('conversion-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    const formData = new FormData(this);
-    const loadingAnimation = document.getElementById('loading-animation');
-    loadingAnimation.style.display = 'block'; // Show loading animation
-
-    fetch(this.action, {
-        method: this.method,
-        body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        loadingAnimation.style.display = 'none';
-
-        if (data.audio_url) {  // Ensure to check if audio_url exists in the response
-            document.getElementById('audio-output').style.display = 'block';
-            document.getElementById('audio-source').src = data.audio_url; // Set audio source to the received URL
-            document.getElementById('output-audio').load(); // Load the new audio source
-        } else {
-            alert(`Error: ${data.error}`); // Alert any error message from the backend
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        loadingAnimation.style.display = 'none';
-        alert('An error occurred during conversion.');
-    });
-});
-
-// About section functionality
 document.addEventListener('DOMContentLoaded', () => {
-    const aboutLink = document.getElementById('about-link');
-    const aboutSection = document.getElementById('about-section');
-    const closeButton = document.querySelector('.close-button');
+    const uploadForm = document.getElementById('uploadForm');
+    const sketchOutput = document.getElementById('sketch-output');
+    const sketchImage = document.getElementById('sketchImage');
+    const pencilThicknessSlider = document.getElementById('pencil-thickness');
+    const edgeSensitivitySlider = document.getElementById('edge-sensitivity');
+    const brightnessSlider = document.getElementById('brightness');
+    const contrastSlider = document.getElementById('contrast');
+    const pencilThicknessValue = document.getElementById('pencil-thickness-value');
+    const edgeSensitivityValue = document.getElementById('edge-sensitivity-value');
+    const brightnessValue = document.getElementById('brightness-value');
+    const contrastValue = document.getElementById('contrast-value');
+    const resetButton = document.getElementById('reset-button');
+    const conversionSelect = document.getElementById('conversion');
+    const imageInput = document.getElementById('image-input');
+    const loadingSpinner = document.getElementById('loading-spinner');
 
-    aboutLink.addEventListener('click', () => {
-        aboutSection.style.display = 'block'; // Show the about section
+    // Update value displays for sliders
+    function updateSliderDisplays() {
+        pencilThicknessValue.textContent = `Pencil Thickness: ${pencilThicknessSlider.value}`;
+        edgeSensitivityValue.textContent = `Edge Sensitivity: ${edgeSensitivitySlider.value}`;
+        brightnessValue.textContent = `Brightness: ${brightnessSlider.value}`;
+        contrastValue.textContent = `Contrast: ${contrastSlider.value}`;
+    }
+
+    // Slider event listeners
+    pencilThicknessSlider.addEventListener('input', () => {
+        updateSliderDisplays();
+        updateSketch(); // Update sketch in real-time
     });
 
-    closeButton.addEventListener('click', () => {
-        aboutSection.style.display = 'none'; // Hide the about section
+    edgeSensitivitySlider.addEventListener('input', () => {
+        updateSliderDisplays();
+        updateSketch(); // Update sketch in real-time
     });
+
+    brightnessSlider.addEventListener('input', () => {
+        updateSliderDisplays();
+        updateSketch(); // Update sketch in real-time
+    });
+
+    contrastSlider.addEventListener('input', () => {
+        updateSliderDisplays();
+        updateSketch(); // Update sketch in real-time
+    });
+
+    // Reset slider values
+    resetButton.addEventListener('click', () => {
+        pencilThicknessSlider.value = 5;
+        edgeSensitivitySlider.value = 5;
+        brightnessSlider.value = 1;
+        contrastSlider.value = 1;
+        updateSliderDisplays(); // Update displayed values
+        updateSketch(); // Update sketch in real-time
+    });
+
+    // Handle image upload
+    imageInput.addEventListener('change', () => {
+        if (imageInput.files.length > 0) {
+            updateSketch(); // Update sketch when an image is uploaded
+        }
+    });
+
+    // Handle style change
+    conversionSelect.addEventListener('change', () => {
+        updateSketch(); // Update sketch when style is changed
+    });
+
+    // Function to update the sketch based on current inputs
+    async function updateSketch() {
+        if (imageInput.files.length === 0) {
+            return; // No image selected
+        }
+
+        // Show loading spinner
+        loadingSpinner.style.display = 'block';
+
+        const formData = new FormData(uploadForm);
+        const response = await fetch('/convert', {
+            method: 'POST',
+            body: formData
+        });
+
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.output_image) {
+                sketchImage.src = data.output_image; // Update the image source
+                sketchOutput.style.display = 'block'; // Show the output section
+            } else {
+                alert('Error: No output image returned.');
+            }
+        } else {
+            alert('Error converting image. Please try again.');
+        }
+    }
+
+    // Download the image
+    window.downloadSketch = function() {
+        if (sketchImage.src) {
+            const link = document.createElement('a');
+            link.href = sketchImage.src;
+            link.download = 'sketch.png'; // Default name for the downloaded file
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            alert('No sketch available for download.');
+        }
+    };
+
+    // Toggle About Section
+    window.toggleAboutSection = function() {
+        const aboutSection = document.getElementById('about-section');
+        aboutSection.style.display = aboutSection.style.display === 'none' ? 'block' : 'none';
+    };
 });
