@@ -1,4 +1,4 @@
-Flask==2.3.3                
-Werkzeug==2.3.3            
-ffmpeg-python==0.2.0       
-
+### Requirements File (`requirements.txt`):
+```text
+Flask
+opencv-python
